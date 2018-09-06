@@ -3,8 +3,8 @@ namespace niiknow;
 
 class ObjectHtmlBuilder
 {
-    protected $autocloseTags = ',img,br,hr,input,area,link,meta,param,base,col,command,keygen,source,';
-    protected $descriptorNodes = ',tagName,';
+    protected $autocloseTags = ',img,br,hr,input,area,link' .
+        ',meta,param,base,col,command,keygen,source,';
 
     public function __construct($options = null)
     {
@@ -47,6 +47,21 @@ class ObjectHtmlBuilder
     }
 
     // helper functions
+    protected function getProp($obj, $prop, $default = null)
+    {
+        if (is_object($obj)) {
+            if (property_exists($obj, $prop)) {
+                return $obj->{$prop};
+            }
+        } elseif (is_array($obj)) {
+            if (isset($obj[$prop])) {
+                return $obj[$prop];
+            }
+        }
+
+        return $default;
+    }
+
     protected function makeHtml($tagName, $node_data, $attrs = [], $level = 0)
     {
         $hasSubNodes = false;
@@ -63,19 +78,16 @@ class ObjectHtmlBuilder
 
             foreach ($node_data as $obj) {
                 if (is_object($obj)) {
-                    $v = (array)$obj;
-
                     $ret[] = $this->makeHtml(
                         null,
                         $obj,
-                        isset($v['attributes']) ? $v['attributes'] : [],
+                        $this->getProp($obj, '_attrs', []),
                         $level
                     );
                 }
             }
 
             if (isset($tagName)) {
-
                 return $this->makeNode(
                     $tagName,
                     implode('', $ret),
@@ -89,14 +101,27 @@ class ObjectHtmlBuilder
         } elseif (is_object($node_data)) {
             $hasSubNodes = true;
             $ret = [];
+
             // must be an array of object property
             foreach ($node_data as $k => $v) {
-                $ret[] = $this->makeHtml(
-                    $k,
-                    $v,
-                    isset($v['attributes']) ? $v['attributes'] : [],
-                    $level + 1
-                );
+                // ignore properties that start with underscore
+                $pos = strpos($k, '_');
+                if ($pos === false || $pos > 0) {
+                    $ret[] = $this->makeHtml(
+                        $k,
+                        $v,
+                        $this->getProp($v, '_attrs', []),
+                        $level + 1
+                    );
+                } elseif ($k === '_content') {
+                    // handle inner conntect
+                    $ret[] = $this->makeHtml(
+                        null,
+                        $v,
+                        $this->getProp($v, '_attrs', []),
+                        $level + 1
+                    );
+                }
             }
 
             if (!isset($tagName)) {

@@ -31,5 +31,33 @@ $builder->toHtml($someObj, $tagName);
 
 ```
 
+Example Object:
+```json
+{
+    "div": "some simple text",
+    "a": {
+        "_attrs": {"title": "google", "href": "https://google.com"},
+        "_content": {
+            "span": "link to google"
+        }
+    }
+}
+```
+
+Output:
+```html
+<div>
+  <div>some simple text</div>
+  <a title="google" href="https://google.com">
+    <i class="fa fa-pencil"></i>
+    <span>link to google</span>
+  </a>
+</div>
+```
+
+## TODO
+[] Fix indent
+[] Bootstrap4 templating example
+
 ## MIT
 

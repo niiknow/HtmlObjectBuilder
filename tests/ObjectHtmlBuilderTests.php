@@ -54,4 +54,25 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         $str = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
+
+    public function test_ObjectHtmlBuilder_complex_html()
+    {
+        $builder = new ObjectHtmlBuilder([ "prettyPrint" => true ]);
+        $object  = '{
+    "div": "some simple text",
+    "a": {
+        "_attrs": {"title": "google", "href": "https://google.com"},
+        "_content": [
+            {"i": { "_attrs": { "class": "fa fa-pencil"} } },
+            {"span": "link to google"}
+        ]
+    }
+}';
+        $expected = '<div><div>some simple text</div><a title="google" ' .
+            'href="https://google.com"><i class="fa fa-pencil">' .
+            '</i><span>link to google</span></a></div>';
+        $str = $builder->toHtml($object);
+        echo $str;
+        $this->assertEquals($expected, $str);
+    }
 }
