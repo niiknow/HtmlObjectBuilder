@@ -58,7 +58,7 @@ class ObjectHtmlBuilder
         }
 
         if (is_array($node_data)) {
-            // this must be content
+            // this must be content array
             $ret = [];
 
             foreach ($node_data as $obj) {
@@ -115,7 +115,7 @@ class ObjectHtmlBuilder
 
         return $indent . $this->makeNode(
             $tagName,
-            $node_data,
+            $this->escHelper($node_data),
             $attrs,
             $level,
             $hasSubNodes

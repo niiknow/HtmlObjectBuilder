@@ -40,4 +40,18 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         $str = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
+
+     public function test_ObjectHtmlBuilder_with_html_escape()
+    {
+        $builder = new ObjectHtmlBuilder();
+        $object  = '[{"john": "<doe"}, {"cow": [{"boy": "\'john"}]}]';
+        $expected = '<div>
+  <john>&lt;doe</john>
+  <cow>
+    <boy>&#039;john</boy>
+  </cow>
+</div>';
+        $str = $builder->toHtml($object);
+        $this->assertEquals($expected, $str);
+    }
 }

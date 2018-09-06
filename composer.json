@@ -2,7 +2,9 @@
   "name": "niiknow/ObjectHtmlBuilder",
   "description": "to build HTML from PHP object, array, or json string",
   "keywords": [
-    "html"
+    "html",
+    "formbuilder",
+    "form-builder"
   ],
   "license": "MIT",
   "authors": [{
