@@ -3,9 +3,17 @@ namespace niiknow;
 
 class ObjectHtmlBuilder
 {
+    /**
+     * HTML tags that support auto-close
+     * @var string
+     */
     protected $autocloseTags = ',img,br,hr,input,area,link' .
         ',meta,param,base,col,command,keygen,source,';
 
+    /**
+     * Initialize an instance of \niiknow\ObjectHtmlBuilder
+     * @param array $options rendering options
+     */
     public function __construct($options = null)
     {
         $this->options = [
@@ -22,31 +30,52 @@ class ObjectHtmlBuilder
         }
     }
 
-    public function esc($str)
+    /**
+     * Method use to escape html
+     * @param  string $str the string to escape
+     * @return string      html escaped string
+     */
+    protected function esc($str)
     {
         return htmlentities($str, ENT_QUOTES);
     }
 
+    /**
+     * method use to unescape html
+     * @param  string $str the string to unescape
+     * @return string      the unescaped string
+     */
     public function unesc($str)
     {
         return html_entity_decode($str, ENT_QUOTES);
     }
 
+    /**
+     * Convert an object to html
+     * @param  mixed $obj      object, array, or json string to convert
+     * @param  string $tagName the tag name
+     * @param  array  $attrs   any attributes
+     * @return string          the conversion result
+     */
     public function toHtml($obj, $tagName = 'div', $attrs = [])
     {
-        if (!isset($obj)) {
-            return '<!-- empty object -->';
-        }
-
-        // now convert json back to array
         if (is_string($obj)) {
             $obj = json_decode($obj);
+        } elseif (!isset($obj)) {
+            $obj = '';
         }
 
         return trim($this->makeHtml($tagName, $obj, $attrs, 0));
     }
 
     // helper functions
+    /**
+     * Get an object or array property
+     * @param  mixed  $obj     object or array
+     * @param  string $prop    property to get
+     * @param  mixed  $default default value if not found
+     * @return mixed           the property value
+     */
     protected function getProp($obj, $prop, $default = null)
     {
         if (is_object($obj)) {
@@ -62,6 +91,14 @@ class ObjectHtmlBuilder
         return $default;
     }
 
+    /**
+     * Internal method to convert object to html
+     * @param  string  $tagName   the html tag name
+     * @param  mixed   $node_data object or array data of node
+     * @param  array   $attrs     node attributes
+     * @param  integer $level     current level
+     * @return string             html result
+     */
     protected function makeHtml($tagName, $node_data, $attrs = [], $level = 0)
     {
         $hasSubNodes = false;
@@ -79,7 +116,7 @@ class ObjectHtmlBuilder
             foreach ($node_data as $obj) {
                 if (is_object($obj)) {
                     $ret[] = $this->makeHtml(
-                        null,
+                        $this->getProp($obj, '_tag'),
                         $obj,
                         $this->getProp($obj, '_attrs', []),
                         $level
@@ -121,6 +158,9 @@ class ObjectHtmlBuilder
                         $this->getProp($v, '_attrs', []),
                         $level + 1
                     );
+                } elseif ($k === '_raw') {
+                    // handle inner conntect
+                    $ret[] = '' . $v;
                 }
             }
 
@@ -147,17 +187,21 @@ class ObjectHtmlBuilder
         );
     }
 
+    /**
+     * Helper method to create a XML or HTML node
+     * @param  string   $name        the node name
+     * @param  string   $content     the node content
+     * @param  array    $attrs       the node attributes
+     * @param  integer  $level       current node level
+     * @param  boolean  $hasSubNodes true if this node has subnodes
+     * @return string                the XML or HTML representable of node
+     */
     protected function makeNode($name, $content, $attrs, $level, $hasSubNodes = false)
     {
         $indent = '';
 
         if ($this->options['prettyPrint'] && $hasSubNodes) {
             $indent = "\n" . str_repeat($this->options['indent'], $level);
-        }
-
-        // recursive html call for array
-        if (is_array($content)) {
-            return $this->makeHtml($name, $content, $attrs, $level + 1);
         }
 
         if (!isset($attrs)) {
@@ -194,6 +238,12 @@ class ObjectHtmlBuilder
         return implode('', $node);
     }
 
+    /**
+     * Helper method to escape string only if defined
+     *
+     * @param  string $str the string to escape
+     * @return string      the escaped string if escape option is true
+     */
     protected function escHelper($str)
     {
         return $this->options['escape'] !== false ? $this->esc($str) : $str;

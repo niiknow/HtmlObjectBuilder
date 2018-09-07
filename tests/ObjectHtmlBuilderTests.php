@@ -57,7 +57,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 
     public function test_ObjectHtmlBuilder_complex_html()
     {
-        $builder = new ObjectHtmlBuilder([ "prettyPrint" => true ]);
+        $builder = new ObjectHtmlBuilder([ "prettyPrint" => false ]);
         $object  = '{
     "div": "some simple text",
     "a": {
@@ -66,13 +66,17 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
             {"i": { "_attrs": { "class": "fa fa-pencil"} } },
             {"span": "link to google"}
         ]
+    },
+    "section": {
+        "_attrs": {"title": "Raw Data"},
+        "_raw": "<div>hohoho</div>"
     }
 }';
-        $expected = '<div><div>some simple text</div><a title="google" ' .
-            'href="https://google.com"><i class="fa fa-pencil">' .
-            '</i><span>link to google</span></a></div>';
+        $expected = '<div><div>some simple text</div><a title="google"'.
+            ' href="https://google.com"><i class="fa fa-pencil">'.
+            '</i><span>link to google</span></a>'.
+            '<section title="Raw Data"><div>hohoho</div></section></div>';
         $str = $builder->toHtml($object);
-        echo $str;
         $this->assertEquals($expected, $str);
     }
 }

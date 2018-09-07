@@ -37,9 +37,14 @@ Example Object:
     "div": "some simple text",
     "a": {
         "_attrs": {"title": "google", "href": "https://google.com"},
-        "_content": {
-            "span": "link to google"
-        }
+        "_content": [
+            {"i": { "_attrs": { "class": "fa fa-pencil"} } },
+            {"span": "link to google"}
+        ]
+    },
+    "section": {
+        "_attrs": {"title": "Raw Data"},
+        "_raw": "<div>hohoho</div>"
     }
 }
 ```
@@ -52,8 +57,16 @@ Output:
     <i class="fa fa-pencil"></i>
     <span>link to google</span>
   </a>
+  <section title="Raw Data"><div>hohoho</div></section>
 </div>
 ```
+
+Special/Internal Attributes:
+
+### _attrs - object: all your attributes.  Attributes are rendered as *key="escaped(value)"*
+### _content - mixed: this can be oject, array, or string.  For inner content/children of complex object.
+### _tag - string: use to specify the tag name in an array type.  Also use to override an object tag name.
+### _raw - string: for rendering raw/unescaped HTML content
 
 ## TODO
 [] Fix indent
