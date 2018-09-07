@@ -33,20 +33,22 @@ class MakeTagEvent
         $this->attrs   = $attrs;
         $this->level   = $level;
         $this->isHtml  = $tag === '_html';
+        $this->indent  = '';
 
         $hasSubNodes = false;
 
         if (($builder->getProp($object, '_content') !== null
             && $builder->getProp($object, '_html') !== null)
-            || (is_string($content) && (strpos(trim($content), '<') === 0))
+            || (strpos(trim($content), '<') === 0)
         ) {
             $hasSubNodes = true;
         }
 
         $this->hasSubNodes = $hasSubNodes;
 
-        if ($builder->options['prettyPrint'] && $hasSubNodes) {
+        if (!empty($builder->options['indent']) && $hasSubNodes) {
             $this->indent = "\n" . str_repeat($builder->options['indent'], $level);
+            // echo 'hi' . $this->indent . 'hi';
         }
     }
 }

@@ -16,6 +16,8 @@ class ObjectHtmlBuilder
     protected $makeTagHandlers       = [];
     protected $beforeMakeTagHandlers = [];
 
+    public $options;
+
     /**
      * Initialize an instance of \niiknow\ObjectHtmlBuilder
      * @param array $options rendering options
@@ -23,22 +25,29 @@ class ObjectHtmlBuilder
     public function __construct($options = null)
     {
         $this->options = [
-            'indent'                      => "  ",
-            'prettyPrint'                 => true,
-            'escape'                      => true
+            'indent'   => '',
+            'unescape' => false
         ];
 
-        if (isset($options)) {
+        if (is_array($options)) {
             // merge default
             foreach ($options as $k => $v) {
-                $this->options[$k] = $v;
+                if (isset($v)) {
+                    $this->options[$k] = $v;
+                }
             }
         }
 
         $this->makeTagHandlers['*']     = [$this, 'makeTagInternal'];
         $this->makeTagHandlers['_html'] = function (MakeTagEvent $evt) {
-            echo 'hi';
-            $evt->rst = '' . $evt->content;
+            $indent = $evt->indent;
+            $tc     = trim('' . $evt->content);
+
+            if ($tc[0] !== '<') {
+                $indent = '';
+            }
+
+            $evt->rst = $indent . $evt->content;
             return $evt;
         };
     }
@@ -139,12 +148,13 @@ class ObjectHtmlBuilder
      */
     protected function makeHtml($tagName, $node_data, $attrs = [], $level = 0)
     {
-        $nodes       = [];
-        $indent      = '';
+        $nodes  = [];
+        $indent = '';
 
-        if ($this->options['prettyPrint'] !== false) {
-            $indent =  "\n" . str_repeat($this->options['indent'], $level);
+        if (!empty($this->options['indent'])) {
+            $indent = "\n" . str_repeat($this->options['indent'], $level);
         }
+        // echo "$tagName:$indent:$level";
 
         if (is_array($node_data)) {
             // this must be content array
@@ -172,7 +182,7 @@ class ObjectHtmlBuilder
                 );
             }
 
-            return $indent . implode('', $ret);
+            return implode('', $ret);
         } elseif (is_object($node_data)) {
             $ret = [];
 
@@ -245,6 +255,7 @@ class ObjectHtmlBuilder
         $node        = [$indent, '<', $tag];
         $content     = $evt->content;
         ksort($attrs);
+        // echo "\n$tag:$indent:$evt->level";
 
         foreach ($attrs as $k => $v) {
             // unique handling for class attribute
@@ -267,7 +278,12 @@ class ObjectHtmlBuilder
             $node[] = $attr;
         }
 
-        if (!empty(trim('' . $content))) {
+        $tc = trim('' . $content);
+        if (!empty($tc)) {
+            if ((substr($tc, -1) !== '>')) {
+                $indent = '';
+            }
+
             $node[] = '>';
             $node[] = $content;
             $node[] = $indent;
@@ -325,6 +341,6 @@ class ObjectHtmlBuilder
      */
     protected function escHelper($str)
     {
-        return $this->options['escape'] !== false ? $this->esc($str) : $str;
+        return $this->options['unescape'] === false ? $this->esc($str) : $str;
     }
 }

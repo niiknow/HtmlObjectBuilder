@@ -11,7 +11,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 
     public function test_ObjectHtmlBuilder_with_bad_json_string()
     {
-        $builder = new ObjectHtmlBuilder([ "prettyPrint" => false ]);
+        $builder = new ObjectHtmlBuilder();
         $object  = 'hi';
         $expected = '<div></div>';
         $str = $builder->toHtml($object);
@@ -20,7 +20,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 
     public function test_ObjectHtmlBuilder_with_self_closing_tag()
     {
-        $builder = new ObjectHtmlBuilder([ "prettyPrint" => false ]);
+        $builder = new ObjectHtmlBuilder();
         $object  = '{ "input": "" }';
         $expected = '<div></div>';
         $str = $builder->toHtml($object);
@@ -29,7 +29,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 
     public function test_ObjectHtmlBuilder_with_simple_array_json_string()
     {
-        $builder = new ObjectHtmlBuilder();
+        $builder = new ObjectHtmlBuilder(['indent' => '  ']);
         $object  = '[{"john": "doe"}, {"cow": [{"boy": "john"}]}]';
         $expected = '<div>
   <john>doe</john>
@@ -41,9 +41,9 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $str);
     }
 
-     public function test_ObjectHtmlBuilder_with_html_escape()
+    public function test_ObjectHtmlBuilder_with_html_escape()
     {
-        $builder = new ObjectHtmlBuilder();
+        $builder = new ObjectHtmlBuilder(['indent' => '  ']);
         $object  = '[{"john": "<doe"}, {"cow": [{"boy": "\'john"}]}]';
         $expected = '<div>
   <john>&lt;doe</john>
@@ -57,7 +57,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 
     public function test_ObjectHtmlBuilder_complex_html()
     {
-        $builder = new ObjectHtmlBuilder([ "prettyPrint" => false ]);
+        $builder = new ObjectHtmlBuilder(['indent' => '  ']);
         $object  = '{
     "div": "some simple text",
     "a": {
@@ -72,10 +72,15 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         "_html": "<div>hohoho</div>"
     }
 }';
-        $expected = '<div><div>some simple text</div><a href="https://google.com" title="google"'.
-            '><i class="fa fa-pencil">'.
-            '</i><span>link to google</span></a>'.
-            '<section class="go power ranger" title="Raw Data"><div>hohoho</div></section></div>';
+        $expected = '<div>
+  <div>some simple text</div>
+  <a href="https://google.com" title="google"><i class="fa fa-pencil"></i>
+      <span>link to google</span>
+  </a>
+  <section class="go power ranger" title="Raw Data">
+    <div>hohoho</div>
+  </section>
+</div>';
         $str = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
