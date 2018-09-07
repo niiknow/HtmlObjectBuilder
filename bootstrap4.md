@@ -21,46 +21,44 @@
 # COMPONENTS
 
 ## LAYOUT
+### page
 ### container
 ### row
 ### column
 
 ## DISPLAY
-### HEADERS (h1-6)
-### CODE
-### HTML
+### header (h1-h6)
+### code
+### html
 
 ## RESOURCES
-### SCRIPT
-### CSS
+### script
+### css
 
 ## FORM
-### FORM - action, method, enctype, class, id, nonce, honeypot
-### INPUT
-### TEXTAREA
-### SEARCH
-### HTMLEDITOR
-### SELECT - multi = true/false, type=dropdown,checkbox,radio
-### SELECT2
-### SUBMITBUTTON
-### RESETBUTTON
-### IMAGEUPLOAD
-### FILEUPLOAD
-### BUTTON - onclick, call some global method?
+### form - action, method, enctype, class, id, nonce, honeypot
+### input
+### textarea
+### search
+### htmledit
+### select - multi = true/false, type=dropdown,checkbox,radio
+### select2
+### button - type: submit, reset, back, (on)events, and link
+### imageupload
+### fileupload
 
 ## TEMPLATED
-### NAME
-### ADDRESS
-### PHONE
-### REGISTRATION
-### CONTACTUS
-### STRIPE
-### PAYPAL
-### EMAILSUBSCRIBE
-### TEXTINGSUBSCRIBE
-### MANAGESUBSCRIPTION
-### CHANGEPASSWORD
-### FORGOTPASSWORD
-### RESETPASSWORD
-### UPDATEPROFILE
+### name
+### address
+### phone
+### registration
+### contactus
+### stripe
+### paypal
+### subscribe - email, text, both
+### subscriptionmanage
+### passwordchange
+### passwordforgot
+### passwordreset
+### profile
 
