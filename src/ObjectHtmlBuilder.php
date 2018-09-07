@@ -12,8 +12,8 @@ class ObjectHtmlBuilder
      * HTML tags that support auto-close
      * @var string
      */
-    protected $autocloseTags = ',img,br,hr,input,area,link' .
-        ',meta,param,base,col,command,keygen,source,';
+    protected $autocloseTags =
+        ',img,br,hr,input,area,link,meta,param,base,col,command,keygen,source,';
 
     protected $makeTagHandlers       = [];
     protected $beforeMakeTagHandlers = [];
@@ -233,21 +233,27 @@ class ObjectHtmlBuilder
             // since there is no tag name, just return the content
             // because it's probably a content object
             return implode('', $ret);
-        } elseif ($node_data instanceOf \DateTime) {
+        } elseif ($node_data instanceof \DateTime) {
             // iso 8601 is widely accepted
             $node_data = $node_data->format('c');
+        } elseif ($node_data instanceof Closure) {
+            return $this->makeTag(
+                $node_data,
+                $tagName,
+                $node_data,
+                $attrs,
+                $level
+            );
         }
 
         // finally, handle native type
-        $content = trim(
-            $this->makeTag(
-                $node_data,
-                $tagName,
-                $this->escHelper('' . $node_data),
-                $attrs,
-                $level
-            )
-        );
+        $content = trim($this->makeTag(
+            $node_data,
+            $tagName,
+            $this->escHelper('' . $node_data),
+            $attrs,
+            $level
+        ));
 
         return $indent . $content;
     }
@@ -280,7 +286,7 @@ class ObjectHtmlBuilder
                 }
 
                 // make sure classes are unique
-                $vv = array_unique($vv);
+                $vv    = array_unique($vv);
                 $attr .= ' ' . $k . '="' . implode(' ', $vv) . '"';
             } else {
                 $attr .= ' ' . $k . '="' . $this->esc($v) . '"';
@@ -335,9 +341,11 @@ class ObjectHtmlBuilder
             $this->beforeMakeTagHandlers[$tag]($evt);
         }
 
+        // if not cancel, then process the tag
         if ($evt->cancel === false) {
-            // then we make the tag
-            if (isset($this->makeTagHandlers[$tag])) {
+            if ($content instanceof \Closure) {
+                $content($evt);
+            } elseif (isset($this->makeTagHandlers[$tag])) {
                 $this->makeTagHandlers[$tag]($evt);
             } else {
                 // use defualt handler

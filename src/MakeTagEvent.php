@@ -22,8 +22,12 @@ class MakeTagEvent
      * @param array $options rendering options
      */
     public function __construct(
-        $builder, $object, $tag,
-        $content, $attrs = [], $level = 0
+        $builder,
+        $object,
+        $tag,
+        $content,
+        $attrs = [],
+        $level = 0
     ) {
         if (!isset($attrs)) {
             $attrs = [];

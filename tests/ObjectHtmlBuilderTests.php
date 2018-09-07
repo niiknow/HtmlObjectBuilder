@@ -1,5 +1,6 @@
 <?php
 namespace Tests;
+
 use niiknow\ObjectHtmlBuilder;
 
 class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
@@ -11,54 +12,54 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 
     public function test_ObjectHtmlBuilder_with_bad_json_string()
     {
-        $builder = new ObjectHtmlBuilder();
-        $object  = 'hi';
+        $builder  = new ObjectHtmlBuilder();
+        $object   = 'hi';
         $expected = '<div></div>';
-        $str = $builder->toHtml($object);
+        $str      = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
 
     public function test_ObjectHtmlBuilder_with_self_closing_tag()
     {
-        $builder = new ObjectHtmlBuilder();
-        $object  = '{ "input": "" }';
+        $builder  = new ObjectHtmlBuilder();
+        $object   = '{ "input": "" }';
         $expected = '<div></div>';
-        $str = $builder->toHtml($object);
+        $str      = $builder->toHtml($object);
         $this->assertEquals('<div><input/></div>', $str);
     }
 
     public function test_ObjectHtmlBuilder_with_simple_array_json_string()
     {
-        $builder = new ObjectHtmlBuilder(['indent' => '  ']);
-        $object  = '[{"john": "doe"}, {"cow": [{"boy": "john"}]}]';
+        $builder  = new ObjectHtmlBuilder(['indent' => '  ']);
+        $object   = '[{"john": "doe"}, {"cow": [{"boy": "john"}]}]';
         $expected = '<div>
   <john>doe</john>
   <cow>
     <boy>john</boy>
   </cow>
 </div>';
-        $str = $builder->toHtml($object);
+        $str      = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
 
     public function test_ObjectHtmlBuilder_with_html_escape()
     {
-        $builder = new ObjectHtmlBuilder(['indent' => '  ']);
-        $object  = '[{"john": "<doe"}, {"cow": [{"boy": "\'john"}]}]';
+        $builder  = new ObjectHtmlBuilder(['indent' => '  ']);
+        $object   = '[{"john": "<doe"}, {"cow": [{"boy": "\'john"}]}]';
         $expected = '<div>
   <john>&lt;doe</john>
   <cow>
     <boy>&#039;john</boy>
   </cow>
 </div>';
-        $str = $builder->toHtml($object);
+        $str      = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
 
     public function test_ObjectHtmlBuilder_complex_html()
     {
-        $builder = new ObjectHtmlBuilder(['indent' => '  ']);
-        $object  = '{
+        $builder  = new ObjectHtmlBuilder(['indent' => '  ']);
+        $object   = '{
     "div": "some simple text",
     "a": {
         "_attrs": {"title": "google", "href": "https://google.com"},
@@ -84,7 +85,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
     <div>hohoho</div>
   </section>
 </div>';
-        $str = $builder->toHtml($object);
+        $str      = $builder->toHtml($object);
         $this->assertEquals($expected, $str);
     }
 }
