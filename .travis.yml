@@ -2,16 +2,18 @@ language: php
 php:
   - '7.0'
   - '7.1'
+  - '7.2'
 
 sudo: false
 
-before_install:
-  - composer self-update --stable -n
+env:
+  matrix:
+    - COMPOSER_FLAGS="--prefer-lowest"
+    - COMPOSER_FLAGS=""
 
-install:
-  - composer install --prefer-dist -n -o
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
 
 script:
-  - ./vendor/bin/phpunit --coverage-text=build/cover.txt
-
-after_script:
+  - php vendor/bin/phpunit --coverage-text

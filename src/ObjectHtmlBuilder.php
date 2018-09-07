@@ -27,8 +27,8 @@ class ObjectHtmlBuilder
     public function __construct($options = null)
     {
         $this->options = [
-            'indent'   => '',
-            'noescape' => false
+            'indent'     => '',
+            'escapeWith' => ENT_COMPAT
         ];
 
         if (is_array($options)) {
@@ -71,7 +71,7 @@ class ObjectHtmlBuilder
      */
     protected function esc($str)
     {
-        return htmlentities($str, ENT_QUOTES);
+        return htmlentities($str, $this->options['escapeWith']);
     }
 
     /**
@@ -81,7 +81,7 @@ class ObjectHtmlBuilder
      */
     public function unesc($str)
     {
-        return html_entity_decode($str, ENT_QUOTES);
+        return html_entity_decode($str, $this->options['escapeWith']);
     }
 
     /**
@@ -364,6 +364,6 @@ class ObjectHtmlBuilder
      */
     protected function escHelper($str)
     {
-        return $this->options['noescape'] === false ? $this->esc($str) : $str;
+        return isset($this->options['escapeWith']) ? $this->esc($str) : $str;
     }
 }

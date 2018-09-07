@@ -23,9 +23,9 @@ composer install niiknow/objecthtmlbuilder
 $builder = new \niiknow\ObjectHtmlBuilder();
 
 // ObjectHtmlBuilder($options) - take an optional $options array parameter
-// $options: ['indent' => null, 'noescape' => false]
+// $options: ['indent' => null, 'escapeWith' => ENT_COMPAT]
 // 'indent': set indentation string, example: 'indent' => "\t"
-// 'noescape': true to disable html escape
+// 'escapeWith': htmlentities escape value, see also: http://php.net/manual/en/function.htmlentities.php
 // NOTE: due to different object complexity cases, indent is difficult to cover.  If you really need HTML format and since this is PHP, you can always install tidy: http://php.net/manual/en/tidy.examples.basic.php
 
 // now to use, simply call toHtml method with your object

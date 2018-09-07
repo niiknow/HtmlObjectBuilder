@@ -49,7 +49,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         $expected = '<div>
   <john>&lt;doe</john>
   <cow>
-    <boy>&#039;john</boy>
+    <boy>\'john</boy>
   </cow>
 </div>';
         $str      = $builder->toHtml($object);
