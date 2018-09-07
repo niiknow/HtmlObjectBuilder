@@ -21,44 +21,46 @@
 # COMPONENTS
 
 ## LAYOUT
-### page
-### container
-### row
-### column
+### b-page      - individual page, like in a wizard
+### b-tab       - individual tab
+### b-container - simple container div
+### b-row       - row div
+### b-column    - column div
+### b-modal     - modal container
 
 ## DISPLAY
-### header (h1-h6)
-### code
-### html
+### b-header (h1-h6)
+### b-code
+### b-html
 
 ## RESOURCES
 ### script
 ### css
 
 ## FORM
-### form - action, method, enctype, class, id, nonce, honeypot
-### input
-### textarea
-### search
-### htmledit
-### select - multi = true/false, type=dropdown,checkbox,radio
-### select2
-### button - type: submit, reset, back, (on)events, and link
-### imageupload
-### fileupload
+### b-form - action, method, enctype, class, id, nonce, honeypot
+### b-form-input
+### b-form-textarea
+### b-form-search
+### b-form-editor
+### b-form-select - multi = true/false, type=dropdown,checkbox,radio
+### b-form-select2
+### b-form-button - type: submit, reset, back, (on)events, and link
+### b-form-image
+### b-form-file
 
 ## TEMPLATED
-### name
-### address
-### phone
-### registration
-### contactus
-### stripe
-### paypal
-### subscribe - email, text, both
-### subscriptionmanage
-### passwordchange
-### passwordforgot
-### passwordreset
-### profile
+### b-name
+### b-address
+### b-phone
+### b-registration
+### b-contactus
+### b-stripe
+### b-paypal
+### b-subscribe - email, text, both
+### b-managesubs
+### b-passwordchange
+### b-passwordforgot
+### b-passwordreset
+### b-profile
 
