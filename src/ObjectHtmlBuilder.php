@@ -26,7 +26,7 @@ class ObjectHtmlBuilder
     {
         $this->options = [
             'indent'   => '',
-            'unescape' => false
+            'noescape' => false
         ];
 
         if (is_array($options)) {
@@ -52,7 +52,7 @@ class ObjectHtmlBuilder
         };
     }
 
-    public function registerOnBeforeTag($tagHandlers)
+    public function registerOnBeforeMakeTag($tagHandlers)
     {
         if (isset($tagHandlers)) {
             // merge default
@@ -336,12 +336,14 @@ class ObjectHtmlBuilder
             $this->beforeMakeTagHandlers[$tag]($evt);
         }
 
-        // then we make the tag
-        if (isset($this->makeTagHandlers[$tag])) {
-            $this->makeTagHandlers[$tag]($evt);
-        } else {
-            // use defualt handler
-            $this->makeTagHandlers['*']($evt);
+        if ($evt->cancel === false) {
+            // then we make the tag
+            if (isset($this->makeTagHandlers[$tag])) {
+                $this->makeTagHandlers[$tag]($evt);
+            } else {
+                // use defualt handler
+                $this->makeTagHandlers['*']($evt);
+            }
         }
 
         return $evt->rst;
@@ -355,6 +357,6 @@ class ObjectHtmlBuilder
      */
     protected function escHelper($str)
     {
-        return $this->options['unescape'] === false ? $this->esc($str) : $str;
+        return $this->options['noescape'] === false ? $this->esc($str) : $str;
     }
 }

@@ -15,7 +15,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         $object  = 'hi';
         $expected = '<div></div>';
         $str = $builder->toHtml($object);
-        $this->assertEquals('<div></div>', $str);
+        $this->assertEquals($expected, $str);
     }
 
     public function test_ObjectHtmlBuilder_with_self_closing_tag()

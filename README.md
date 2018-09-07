@@ -22,12 +22,14 @@ composer install niiknow/objecthtmlbuilder
 ```php
 $builder = new \niiknow\ObjectHtmlBuilder();
 
-// teach it positive phrases
+// ObjectHtmlBuilder($options) - take an optional $options array parameter
+// $options: ['indent' => null, 'noescape' => false]
+// 'indent': set indentation string, example: 'indent' => "\t"
+// 'noescape': true to disable html escape
+// NOTE: due to different object complexity cases, indent is difficult to cover.  If you really need HTML format and since this is PHP, you can always install tidy: http://php.net/manual/en/tidy.examples.basic.php
 
-$builder->toHtml($someObj, $tagName);
-
-// $someObj - can be an object, array, or a json string
-// $tagName - optional, will default to "div"
+// now to use, simply call toHtml method with your object
+$builder->toHtml($someObj);
 
 ```
 
@@ -63,13 +65,33 @@ Output:
 
 Special/Internal Attributes:
 
-### _attrs - object: all your attributes.  Attributes are rendered as *key="escaped(value)"*
-### _content - mixed: this can be oject, array, or string.  For inner content/children of complex object.
-### _tag - string: use to specify the tag name in an array type.  Also use to override an object tag name.
-### _html - string: for rendering raw/unescaped HTML content
+1. _attrs - object: all your attributes.  Attributes are rendered as *key="escaped(value)"*
+2. _content - mixed: this can be oject, array, or string.  For inner content/children of complex object.
+3. _tag - string: use to specify the tag name in an array type.  Also use to override an object tag name.
+4. _html - string: for rendering raw/unescaped HTML content
+
+## API
+
+### toHtml($someObj, $tagName)
+The main function to convert object to HTML.
+
+* $someObj - can be an object, array, or a json string
+* $tagName - optional, will default to "div"
+
+### registerOnBeforeMakeTag($array)
+Register Closure as event handler intercepting MakeTagEvent.  See \niiknow\MakeTagEvent
+
+* array - an array of tag to Closure
+
+### registerOnMakeTag($array)
+Register Closure as event handler for MakeTagEvent.  See \niiknow\MakeTagEvent
+
+* array - an array of tag to Closure
+* 
+## NOTE
+* html node property/attributes are sorted alphabetically.
 
 ## TODO
-[] Fix indent
 [] Bootstrap4 templating example
 
 ## MIT

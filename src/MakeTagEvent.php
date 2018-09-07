@@ -15,6 +15,7 @@ class MakeTagEvent
     public $hasSubNodes;
     public $rst;
     public $indent = '';
+    public $cancel = false;
 
     /**
      * Initialize an instance of \niiknow\MakeTagEvent
