@@ -13,7 +13,8 @@ class ObjectHtmlBuilder
     protected $autocloseTags = ',img,br,hr,input,area,link' .
         ',meta,param,base,col,command,keygen,source,';
 
-    protected $tagHandlers = [];
+    protected $makeTagHandlers       = [];
+    protected $beforeMakeTagHandlers = [];
 
     /**
      * Initialize an instance of \niiknow\ObjectHtmlBuilder
@@ -34,20 +35,34 @@ class ObjectHtmlBuilder
             }
         }
 
-        $this->tagHandlers['*']     = [$this, 'makeTagInternal'];
-        $this->tagHandlers['_html'] = function (MakeTagEvent $evt) {
+        $this->makeTagHandlers['*']     = [$this, 'makeTagInternal'];
+        $this->makeTagHandlers['_html'] = function (MakeTagEvent $evt) {
+            echo 'hi';
             $evt->rst = '' . $evt->content;
             return $evt;
         };
     }
 
-    public function registerTagHandlers($tagHandlers)
+    public function registerOnBeforeTag($tagHandlers)
     {
         if (isset($tagHandlers)) {
             // merge default
             foreach ($tagHandlers as $k => $v) {
                 if ($v instanceof Closure) {
-                    $this->tagHandlers[$k] = $v;
+                    $this->beforeMakeTagHandlers[$k] = $v;
+                }
+            }
+        }
+    }
+
+
+    public function registerOnMakeTag($tagHandlers)
+    {
+        if (isset($tagHandlers)) {
+            // merge default
+            foreach ($tagHandlers as $k => $v) {
+                if ($v instanceof Closure) {
+                    $this->makeTagHandlers[$k] = $v;
                 }
             }
         }
@@ -224,14 +239,28 @@ class ObjectHtmlBuilder
         $indent      = $evt->indent;
         $hasSubNodes = $evt->hasSubNodes;
         $tag         = $evt->tag;
-        $attrs       = $evt->attrs;
+        $attrs       = (array)$evt->attrs;
         $node        = [];
         $attr        = '';
         $node        = [$indent, '<', $tag];
         $content     = $evt->content;
+        ksort($attrs);
 
         foreach ($attrs as $k => $v) {
-            $attr .= ' ' . $k . '="' . $this->esc($v) . '"';
+            // unique handling for class attribute
+            if ($k === 'class') {
+                $vv = isset($v) ? $v : [];
+
+                if (is_string($v)) {
+                    $vv = explode(' ', $v);
+                }
+
+                // make sure classes are unique
+                $vv = array_unique($vv);
+                $attr .= ' ' . $k . '="' . implode(' ', $vv) . '"';
+            } else {
+                $attr .= ' ' . $k . '="' . $this->esc($v) . '"';
+            }
         }
 
         if (!empty($attr)) {
@@ -271,11 +300,18 @@ class ObjectHtmlBuilder
     {
         $evt = new MakeTagEvent($this, $object, $tag, $content, $attrs, $level);
 
-        if (isset($this->tagHandlers[$tag])) {
-            $this->tagHandlers[$tag]($evt);
+        // allow user to intercept and add special attributes
+        // such as class if required
+        if (isset($this->beforeMakeTagHandlers[$tag])) {
+            $this->beforeMakeTagHandlers[$tag]($evt);
+        }
+
+        // then we make the tag
+        if (isset($this->makeTagHandlers[$tag])) {
+            $this->makeTagHandlers[$tag]($evt);
         } else {
             // use defualt handler
-            $this->tagHandlers['*']($evt);
+            $this->makeTagHandlers['*']($evt);
         }
 
         return $evt->rst;
