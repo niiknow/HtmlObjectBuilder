@@ -112,7 +112,10 @@ class ObjectHtmlBuilder
             $obj = '';
         }
 
-        return trim($this->makeHtml($tagName, $obj, $attrs, 0));
+        $html = trim($this->makeHtml($tagName, $obj, $attrs, 0));
+        // $html = preg_replace('/(>aaa\s+aaa)/', '>aaa', $html );
+        //$html = preg_replace('/zzz/', "\n", $html);
+        return $html;
     }
 
     // helper functions
@@ -171,18 +174,25 @@ class ObjectHtmlBuilder
                 }
             }
 
+            $content = trim(implode('', $ret));
+
             if (isset($tagName)) {
-                return $this->makeTag(
-                    $node_data,
-                    $tagName,
-                    implode('', $ret),
-                    $attrs,
-                    $level,
-                    count($ret) > 0
+                $content = trim(
+                    $this->makeTag(
+                        $node_data,
+                        $tagName,
+                        implode('', $ret),
+                        $attrs,
+                        $level
+                    )
                 );
             }
 
-            return implode('', $ret);
+            if (count($ret) > 1) {
+                $indent .= str_repeat($this->options['indent'], 1);
+            }
+
+            return $indent . $content;
         } elseif (is_object($node_data)) {
             $ret = [];
 
@@ -211,7 +221,7 @@ class ObjectHtmlBuilder
                         null,
                         $v,
                         $this->getProp($v, '_attrs', []),
-                        $level + 1
+                        $level
                     );
                 }
             }
@@ -230,13 +240,17 @@ class ObjectHtmlBuilder
             );
         }
 
-        return $indent . $this->makeTag(
-            $node_data,
-            $tagName,
-            $this->escHelper($node_data),
-            $attrs,
-            $level
+        $content = trim(
+            $this->makeTag(
+                $node_data,
+                $tagName,
+                $this->escHelper($node_data),
+                $attrs,
+                $level
+            )
         );
+
+        return $indent . $content;
     }
 
     /**

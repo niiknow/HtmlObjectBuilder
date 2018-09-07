@@ -65,7 +65,8 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
         "_content": [
             {"i": { "_attrs": { "class": "fa fa-pencil"} } },
             {"span": "link to google"}
-        ]
+        ],
+        "test": "test"
     },
     "section": {
         "_attrs": {"title": "Raw Data", "class": "go go power ranger go ranger"},
@@ -74,8 +75,10 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
 }';
         $expected = '<div>
   <div>some simple text</div>
-  <a href="https://google.com" title="google"><i class="fa fa-pencil"></i>
-      <span>link to google</span>
+  <a href="https://google.com" title="google">
+    <i class="fa fa-pencil"></i>
+    <span>link to google</span>
+    <test>test</test>
   </a>
   <section class="go power ranger" title="Raw Data">
     <div>hohoho</div>
