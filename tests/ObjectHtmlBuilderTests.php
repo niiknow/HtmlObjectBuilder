@@ -69,7 +69,7 @@ class ObjectHtmlBuilderTests extends \PHPUnit\Framework\TestCase
     },
     "section": {
         "_attrs": {"title": "Raw Data"},
-        "_raw": "<div>hohoho</div>"
+        "_html": "<div>hohoho</div>"
     }
 }';
         $expected = '<div><div>some simple text</div><a title="google"'.

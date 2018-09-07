@@ -1,6 +1,9 @@
 <?php
 namespace niiknow;
 
+/**
+ * Object to HTML Builder
+ */
 class ObjectHtmlBuilder
 {
     /**
@@ -9,6 +12,8 @@ class ObjectHtmlBuilder
      */
     protected $autocloseTags = ',img,br,hr,input,area,link' .
         ',meta,param,base,col,command,keygen,source,';
+
+    protected $tagHandlers = [];
 
     /**
      * Initialize an instance of \niiknow\ObjectHtmlBuilder
@@ -26,6 +31,24 @@ class ObjectHtmlBuilder
             // merge default
             foreach ($options as $k => $v) {
                 $this->options[$k] = $v;
+            }
+        }
+
+        $this->tagHandlers['*']     = [$this, 'makeTagInternal'];
+        $this->tagHandlers['_html'] = function (MakeTagEvent $evt) {
+            $evt->rst = '' . $evt->content;
+            return $evt;
+        };
+    }
+
+    public function registerTagHandlers($tagHandlers)
+    {
+        if (isset($tagHandlers)) {
+            // merge default
+            foreach ($tagHandlers as $k => $v) {
+                if ($v instanceof Closure) {
+                    $this->tagHandlers[$k] = $v;
+                }
             }
         }
     }
@@ -76,7 +99,7 @@ class ObjectHtmlBuilder
      * @param  mixed  $default default value if not found
      * @return mixed           the property value
      */
-    protected function getProp($obj, $prop, $default = null)
+    public function getProp($obj, $prop, $default = null)
     {
         if (is_object($obj)) {
             if (property_exists($obj, $prop)) {
@@ -101,7 +124,6 @@ class ObjectHtmlBuilder
      */
     protected function makeHtml($tagName, $node_data, $attrs = [], $level = 0)
     {
-        $hasSubNodes = false;
         $nodes       = [];
         $indent      = '';
 
@@ -125,7 +147,8 @@ class ObjectHtmlBuilder
             }
 
             if (isset($tagName)) {
-                return $this->makeNode(
+                return $this->makeTag(
+                    $node_data,
                     $tagName,
                     implode('', $ret),
                     $attrs,
@@ -136,7 +159,6 @@ class ObjectHtmlBuilder
 
             return $indent . implode('', $ret);
         } elseif (is_object($node_data)) {
-            $hasSubNodes = true;
             $ret = [];
 
             // must be an array of object property
@@ -151,8 +173,13 @@ class ObjectHtmlBuilder
                         $level + 1
                     );
                 } elseif ($k === '_html') {
-                    // handle inner content
-                    $ret[] = '' . $v;
+                    $ret[] = $this->makeTag(
+                        $node_data,
+                        $k,
+                        $v,
+                        $attrs,
+                        $level + 1
+                    );
                 } elseif ($k === '_content') {
                     // handle inner content
                     $ret[] = $this->makeHtml(
@@ -169,48 +196,39 @@ class ObjectHtmlBuilder
                 return implode('', $ret);
             }
 
-            return $this->makeNode(
+            return $this->makeTag(
+                $node_data,
                 $tagName,
                 implode('', $ret),
                 $attrs,
-                $level,
-                $hasSubNodes
+                $level
             );
         }
 
-        return $indent . $this->makeNode(
+        return $indent . $this->makeTag(
+            $node_data,
             $tagName,
             $this->escHelper($node_data),
             $attrs,
-            $level,
-            $hasSubNodes
+            $level
         );
     }
 
     /**
-     * Helper method to create a XML or HTML node
-     * @param  string   $name        the node name
-     * @param  string   $content     the node content
-     * @param  array    $attrs       the node attributes
-     * @param  integer  $level       current node level
-     * @param  boolean  $hasSubNodes true if this node has subnodes
-     * @return string                the XML or HTML representable of node
+     * Internal method for making tag
+     * @param  MakeTagEvent $evt the tag making event
+     * @return MakeTagEvent            the tag making event
      */
-    protected function makeNode($name, $content, $attrs, $level, $hasSubNodes = false)
+    protected function makeTagInternal(MakeTagEvent $evt)
     {
-        $indent = '';
-
-        if ($this->options['prettyPrint'] && $hasSubNodes) {
-            $indent = "\n" . str_repeat($this->options['indent'], $level);
-        }
-
-        if (!isset($attrs)) {
-            $attrs = [];
-        }
-
-        $attr   = '';
-
-        $node = [$indent, '<', $name];
+        $indent      = $evt->indent;
+        $hasSubNodes = $evt->hasSubNodes;
+        $tag         = $evt->tag;
+        $attrs       = $evt->attrs;
+        $node        = [];
+        $attr        = '';
+        $node        = [$indent, '<', $tag];
+        $content     = $evt->content;
 
         foreach ($attrs as $k => $v) {
             $attr .= ' ' . $k . '="' . $this->esc($v) . '"';
@@ -225,17 +243,42 @@ class ObjectHtmlBuilder
             $node[] = $content;
             $node[] = $indent;
             $node[] = '</';
-            $node[] = $name;
+            $node[] = $tag;
             $node[] = '>';
-        } elseif (strpos($this->autocloseTags, ',' . $name . ',') === false) {
+        } elseif (strpos($this->autocloseTags, ',' . $tag . ',') === false) {
             $node[] = '></';
-            $node[] = $name;
+            $node[] = $tag;
             $node[] = '>';
         } else {
             $node[] = '/>';
         }
 
-        return implode('', $node);
+        $evt->rst = implode('', $node);
+
+        return $evt;
+    }
+
+    /**
+     * Helper method to create a XML or HTML node/tag
+     * @param  mixed    $object      the node/tag object, array, or string
+     * @param  string   $tag         the node/tag name
+     * @param  string   $content     the node/tag content
+     * @param  array    $attrs       the node/tag attributes
+     * @param  integer  $level       current node/tag level
+     * @return string                the XML or HTML representable of node/tag
+     */
+    protected function makeTag($object, $tag, $content, $attrs, $level)
+    {
+        $evt = new MakeTagEvent($this, $object, $tag, $content, $attrs, $level);
+
+        if (isset($this->tagHandlers[$tag])) {
+            $this->tagHandlers[$tag]($evt);
+        } else {
+            // use defualt handler
+            $this->tagHandlers['*']($evt);
+        }
+
+        return $evt->rst;
     }
 
     /**
