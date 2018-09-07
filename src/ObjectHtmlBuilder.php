@@ -150,17 +150,17 @@ class ObjectHtmlBuilder
                         $this->getProp($v, '_attrs', []),
                         $level + 1
                     );
+                } elseif ($k === '_html') {
+                    // handle inner content
+                    $ret[] = '' . $v;
                 } elseif ($k === '_content') {
-                    // handle inner conntect
+                    // handle inner content
                     $ret[] = $this->makeHtml(
                         null,
                         $v,
                         $this->getProp($v, '_attrs', []),
                         $level + 1
                     );
-                } elseif ($k === '_raw') {
-                    // handle inner conntect
-                    $ret[] = '' . $v;
                 }
             }
 

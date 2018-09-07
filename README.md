@@ -44,7 +44,7 @@ Example Object:
     },
     "section": {
         "_attrs": {"title": "Raw Data"},
-        "_raw": "<div>hohoho</div>"
+        "_html": "<div>hohoho</div>"
     }
 }
 ```
@@ -66,7 +66,7 @@ Special/Internal Attributes:
 ### _attrs - object: all your attributes.  Attributes are rendered as *key="escaped(value)"*
 ### _content - mixed: this can be oject, array, or string.  For inner content/children of complex object.
 ### _tag - string: use to specify the tag name in an array type.  Also use to override an object tag name.
-### _raw - string: for rendering raw/unescaped HTML content
+### _html - string: for rendering raw/unescaped HTML content
 
 ## TODO
 [] Fix indent
