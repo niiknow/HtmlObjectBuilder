@@ -78,16 +78,16 @@ The main function to convert object to HTML.
 * $someObj - can be an object, array, or a json string
 * $tagName - optional, will default to "div"
 
-### registerOnBeforeMakeTag($array)
-Register Closure as event handler intercepting MakeTagEvent.  See \niiknow\MakeTagEvent
+### setOnBeforeTagHandler($tagName, Closure $handler)
+Register Closure as event handler intercepting MakeTagEvent.  See \niiknow\MakeTagEvent.  This is useful for adding additional class or attribute to tag.
 
 * array - an array of tag to Closure
 
-### registerOnMakeTag($array)
+### setOnTagHandler($tagName, Closure $handler)
 Register Closure as event handler for MakeTagEvent.  See \niiknow\MakeTagEvent
 
 * array - an array of tag to Closure
-* 
+
 ## NOTE
 * html node property/attributes are sorted alphabetically.
 

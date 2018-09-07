@@ -1,6 +1,8 @@
 <?php
 namespace niiknow;
 
+use Closure;
+
 /**
  * Object to HTML Builder
  */
@@ -52,29 +54,14 @@ class ObjectHtmlBuilder
         };
     }
 
-    public function registerOnBeforeMakeTag($tagHandlers)
+    public function setOnBeforeTagHandler($tagName, Closure $handler)
     {
-        if (isset($tagHandlers)) {
-            // merge default
-            foreach ($tagHandlers as $k => $v) {
-                if ($v instanceof Closure) {
-                    $this->beforeMakeTagHandlers[$k] = $v;
-                }
-            }
-        }
+        $this->beforeMakeTagHandlers[$tagName] = $handler;
     }
 
-
-    public function registerOnMakeTag($tagHandlers)
+    public function setOnTagHandler($tagName, Closure $handler)
     {
-        if (isset($tagHandlers)) {
-            // merge default
-            foreach ($tagHandlers as $k => $v) {
-                if ($v instanceof Closure) {
-                    $this->makeTagHandlers[$k] = $v;
-                }
-            }
-        }
+        $this->makeTagHandlers[$tagName] = $handler;
     }
 
     /**

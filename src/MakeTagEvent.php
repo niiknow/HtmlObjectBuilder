@@ -21,8 +21,10 @@ class MakeTagEvent
      * Initialize an instance of \niiknow\MakeTagEvent
      * @param array $options rendering options
      */
-    public function __construct($builder, $object, $tag, $content, $attrs = [], $level = 0)
-    {
+    public function __construct(
+        $builder, $object, $tag,
+        $content, $attrs = [], $level = 0
+    ) {
         if (!isset($attrs)) {
             $attrs = [];
         }
