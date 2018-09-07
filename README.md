@@ -43,7 +43,7 @@ Example Object:
         ]
     },
     "section": {
-        "_attrs": {"title": "Raw Data"},
+        "_attrs": {"title": "Raw Data", "class": "go go power ranger go ranger"},
         "_html": "<div>hohoho</div>"
     }
 }
@@ -53,11 +53,11 @@ Output:
 ```html
 <div>
   <div>some simple text</div>
-  <a title="google" href="https://google.com">
+  <a href="https://google.com" title="google">
     <i class="fa fa-pencil"></i>
     <span>link to google</span>
   </a>
-  <section title="Raw Data"><div>hohoho</div></section>
+  <section class="go power ranger" title="Raw Data"><div>hohoho</div></section>
 </div>
 ```
 
