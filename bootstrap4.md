@@ -35,7 +35,7 @@
 ### CSS
 
 ## FORM
-### FORM
+### FORM - action, method, enctype, class, id, nonce, honeypot
 ### INPUT
 ### TEXTAREA
 ### SEARCH
@@ -48,6 +48,19 @@
 ### FILEUPLOAD
 ### BUTTON - onclick, call some global method?
 
-
-
+## TEMPLATED
+### NAME
+### ADDRESS
+### PHONE
+### REGISTRATION
+### CONTACTUS
+### STRIPE
+### PAYPAL
+### EMAILSUBSCRIBE
+### TEXTINGSUBSCRIBE
+### MANAGESUBSCRIPTION
+### CHANGEPASSWORD
+### FORGOTPASSWORD
+### RESETPASSWORD
+### UPDATEPROFILE
 
