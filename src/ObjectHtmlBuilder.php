@@ -144,6 +144,13 @@ class ObjectHtmlBuilder
         if (!empty($this->options['indent'])) {
             $indent = "\n" . str_repeat($this->options['indent'], $level);
         }
+
+        // do not send internal tag unless it is _html
+        // this is here to catch in case something get through
+        if (strpos($tagName, '_') === 0 && $tagName !== '_html') {
+            $tagName = null;
+        }
+
         // echo "$tagName:$indent:$level";
 
         if (is_array($node_data)) {
@@ -151,7 +158,8 @@ class ObjectHtmlBuilder
             $ret = [];
 
             foreach ($node_data as $obj) {
-                if (is_object($obj)) {
+                // only process object or array
+                if (is_object($obj) || is_array($obj)) {
                     $ret[] = $this->makeHtml(
                         $this->getProp($obj, '_tag'),
                         $obj,
@@ -161,20 +169,19 @@ class ObjectHtmlBuilder
                 }
             }
 
-            $content = trim(implode('', $ret));
-
+            // TODO: determine and unit test this edge case
             if (isset($tagName)) {
-                $content = trim(
-                    $this->makeTag(
-                        $node_data,
-                        $tagName,
-                        implode('', $ret),
-                        $attrs,
-                        $level
-                    )
+                return $this->makeTag(
+                    $node_data,
+                    $tagName,
+                    implode('', $ret),
+                    $attrs,
+                    $level
                 );
             }
 
+            // this is to indent the array an extra level
+            $content = trim(implode('', $ret));
             if (count($ret) > 1) {
                 $indent .= str_repeat($this->options['indent'], 1);
             }
@@ -213,25 +220,29 @@ class ObjectHtmlBuilder
                 }
             }
 
-            if (!isset($tagName)) {
-                // since there is no tag name, just return the content
-                return implode('', $ret);
+            if (isset($tagName)) {
+                return $this->makeTag(
+                    $node_data,
+                    $tagName,
+                    implode('', $ret),
+                    $attrs,
+                    $level
+                );
             }
 
-            return $this->makeTag(
-                $node_data,
-                $tagName,
-                implode('', $ret),
-                $attrs,
-                $level
-            );
+            // since there is no tag name, just return the content
+            // because it's probably a content object
+            return implode('', $ret);
+        } elseif ($node_data instanceOf \DateTime) {
+            $node_data = $node_data->format('c');
         }
 
+        // finally, handle native type
         $content = trim(
             $this->makeTag(
                 $node_data,
                 $tagName,
-                $this->escHelper($node_data),
+                $this->escHelper('' . $node_data),
                 $attrs,
                 $level
             )
