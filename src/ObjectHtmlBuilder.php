@@ -234,6 +234,7 @@ class ObjectHtmlBuilder
             // because it's probably a content object
             return implode('', $ret);
         } elseif ($node_data instanceOf \DateTime) {
+            // iso 8601 is widely accepted
             $node_data = $node_data->format('c');
         }
 
